@@ -12,5 +12,5 @@ if __name__== "__main__":
    k = int(input("Enter the bit position (k): "))
    if bit_set(num,k):
         print(f"the {k}th bit is set")
-   else:
+   else: 
         print(f"the {k}th bit is not set")
