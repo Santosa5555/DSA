@@ -10,3 +10,4 @@ def countSetBit(num):
 if __name__== "__main__":
    num = int(input("Enter the number: "))
    print("The number of set bit is:",countSetBit(num))
+
