@@ -4,8 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
+    <style>
+    /* Reset default margin and padding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden; /* Prevent scrolling */
+    }
+
+    .full-screen-center {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, rgba(4, 212, 63, 0.5), transparent);
+    }
+  </style>
+<body onload="setup()">
+    <div class="full-screen-center">
+    <div id="renderHere" style="display: flex; flex-direction: column; gap: 10px;">
+        <label>Select your symbol:</label>
+        <select name="selectChoce" id="playerChoice">
+            <option value="X">X</option>
+            <option value="O">O</option>
+        </select>
+        <button onclick="startGame()" style="border-radius: 30%; padding: 10px; cursor: pointer;">Start Game</button>
+    </div>
+    <canvas id="tictactoe" width="300" height="300" style=""></canvas>
+</div>
+
+    <script>
+        // function setup(){
+        //     const humanturn =localStorage.getItem("Humanturn")
+        //     if(humanturn===true){
+        //         make select symbol choose human
+        //     }else if(humanturn===null){
+        //         iitialyy hujan choose form select
+        //         and localStorage.setItem("human")
+        //     }else{
+
+        //         ai choose iteslef between two and game start with human choosing the alternate one
+        //     }
+        // }
+        let human,ai;
+        const size=100;
+        const canvas=document.getElementById("tictactoe")
+        const canvasctx=canvas.getContext("2d");
+        let board=Array.from({length:3},()=>Array(3).fill(""))
+        function startGame(){
+
+            console.log("game is already started")
+            const choice=document.getElementById("playerChoice").value;
+            human=choice;
+            ai=(human==="X")?"O":"X";
+            console.log(human,"and",ai)
+            const renderhere=document.getElementById("renderHere");
+            renderhere.innerHTML=""
+            drawBoard()
+        }
+        function drawBoard(){
+            canvasctx.clearRect(0,0,300,300);
+            canvasctx.lineWidth=1;
+            for(let i=1;i<=2;i++){
+                canvasctx.beginPath();
+                canvasctx.moveTo(i*size,0)
+                canvasctx.lineTo(i*size,300);
+                canvasctx.stroke()
+                //
+                canvasctx.beginPath();
+                canvasctx.moveTo(0,i*size);
+                canvasctx.lineTo(300,i*size)
+                canvasctx.stroke()
+
+            }
+            canvasctx.strokeRect(1, 1, 298, 298);
+
+            for( let row=0;row<3;row++){
+                for(let col=0;col<3;col++){
+                    const val=board[row][col];
+                    if(board[row][col]!==""){
+                        canvasctx.font="60px Arial";
+                        canvasctx.textAlign="center";
+                        canvasctx.textBaseLine="middle";
+                        canvasctx.fillText(val,col*size+size/2,row*size+size/1.5)
+
+                    }
+                }
+            }
+
+        }
+        //handle click
+        function handleClick(event){
+            const rect=canvas.getBoundingClientRect();
+            const x=event.clientX-rect.left;
+            const y=event.clientY-rect.top;
+            const col=Math.floor(x/size);
+            const row=Math.floor(y/size);
+            console.log('this is row and column',col, row)
+            if(board[row][col]===""){
+                console.log('the board is empty',board[row][col])
+                board[row][col]=human
+                drawBoard()
+            }
+        }
+        canvas.addEventListener("click", handleClick);
+  
+
+    </script>
     
 </body>
 </html>
