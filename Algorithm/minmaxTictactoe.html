@@ -78,6 +78,25 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
+        .game-over{
+
+            
+            padding: 20px;
+            background-color: azure;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(31, 194, 150, 0.4);
+        }
+        .modal{
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+        }
   </style>
 <body onload="setup()">
     <div class="full-screen-center">
@@ -98,13 +117,15 @@
             </div>
             
             <canvas id="tictactoe" width="300" height="300" ></canvas>
-            
-            <div id="gameOver" class="game-over" style="display: none;">
-                <h2 id="gameResult"></h2>
-                <div class="restartMenu" style="display: none; gap:10px; ">
+            <div class=modal"">
 
-                    <button class="restart-btn" onclick="restartGame()" style="cursor: pointer; background-color: white; color: green; border-radius: 20%;">Play Again</button>
-                    <button class="main-btn" onclick="resetToMenu()" style="cursor: pointer; background-color: white; color: green; border-radius: 20%;">Main Menu</button>
+                <div id="gameOver" class="game-over" style="display: none;">
+                    <h2 id="gameResult"></h2>
+                    <div class="restartMenu" style="display: none; gap:10px; ">
+                        
+                        <button class="restart-btn" onclick="restartGame()" style="cursor: pointer; background-color: white; color: green; border-radius: 30%;padding: 10px;">Play Again</button>
+                        <button class="main-btn" onclick="resetToMenu()" style="cursor: pointer; background-color: white; color: green; border-radius: 30%;padding: 10px;">Main Menu</button>
+                    </div>
                 </div>
             </div>
              <!-- <canvas id="tictactoe" width="300" height="300" style=""></canvas> -->
@@ -133,23 +154,30 @@
         const turnIndicator=document.querySelector(".game-info")
         const NextTurntodo=document.getElementById("turnIndicator");
         let board=Array.from({length:3},()=>Array(3).fill(""))
-        function startGame(){
-
-            const choice=document.getElementById("playerChoice").value;
-            human=choice;
+        function startGame(randomChoice){
+             boad=Array.from({length:3},()=>Array(3).fill(""))
+            if(!randomChoice){
+                const choice=document.getElementById("playerChoice").value;
+                human=choice;
+            }else{
+               randomChoice===0?"O":"X";
+               human=randomChoice
+            }
             ai=(human==="X")?"O":"X";
             turnIndicator.style.display="block"
-            NextTurn(human)
+            NextTurn(ai)
             const renderhere=document.getElementById("renderHere");
             renderhere.innerHTML=""
             renderhere.style.display="none"
             drawBoard()
         }
         function NextTurn(turnTodo){
-            if(turnTodo===human) NextTurntodo.textContent="Your turn!";
-            if(turnTodo===ai) NextTurntodo.textContent="AI turn!"
+            if(turnTodo===ai) NextTurntodo.textContent="Your turn!";
+            if(turnTodo===human) NextTurntodo.textContent="AI is thinking..."
         }
-        function drawBoard(){
+        function drawBoard(turn,row,col){
+            if(turn===ai) NextTurn(ai)
+            if(turn===human)NextTurn(human)
             canvasctx.clearRect(0,0,300,300);
             canvasctx.lineWidth=1;
             for(let i=1;i<=2;i++){
@@ -171,6 +199,7 @@
                     const val=board[row][col];
                     if(board[row][col]!==""){
                         canvasctx.font="60px Arial";
+                        canvasctx.fillStyle="white"
                         canvasctx.textAlign="center";
                         canvasctx.textBaseLine="middle";
                         canvasctx.fillText(val,col*size+size/2,row*size+size/1.5)
@@ -230,17 +259,19 @@
                 gameOverDiv.style.display="block"
                 restartMenu.style.display="flex"
                 canvas.removeEventListener("click",handleClick)
+                turnIndicator.style.display="none"
             }else if(score===-10){
                 resultText.textContent="You Win!"
                 gameOverDiv.style.display="block";
                 restartMenu.style.display="flex"
                 canvas.removeEventListener("click",handleClick)
+                turnIndicator.style.display="none"
             }else if(!isMovesLeft(board)){
                 resultText.textContent="Drawwwwww!";
                 gameOverDiv.style.display="block";
                 restartMenu.style.display="flex"
                 canvas.removeEventListener("click",handleClick)
-                
+                turnIndicator.style.display="none"
             }
         }
         //minmax
@@ -309,30 +340,26 @@
             const row=Math.floor(y/size);
             if(board[row][col]===""){
                 board[row][col]=human
-                drawBoard()
+                drawBoard(human,row,col)
                 checkWinner()
-                NextTurn(ai)
-
                 //Ai turn
                 const bestMove=findBestMove(board);
                 if(bestMove.row!==-1){
                     board[bestMove.row][bestMove.col]=ai;
                     setTimeout(() => {
                         
-                        drawBoard();
+                        drawBoard(ai,row,col);
+                        checkWinner();
                     }, 1000);
-                    checkWinner();
                  
                 }
 
             }
         }
-        NextTurn(human)
         canvas.addEventListener("click", handleClick);
         //rsestart game
         function restartGame(){
-            boad=Array.from({length:3},()=>Array(3).fill(""))
-            drawBoard()
+            startGame(Math.floor(Math.random()*1))
 
         }
         function resetToMenu(){
